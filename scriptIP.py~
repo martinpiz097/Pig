@@ -1,0 +1,5 @@
+#!usr/bin/python
+from os import system as s;
+
+s('curl icanhazip.com > info.txt');
+s('java -jar generadorIP.jar');

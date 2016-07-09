@@ -1,0 +1,5 @@
+#!usr/bin/python
+from os import system as s;
+
+s('ifconfig wlan0 >> info.txt');
+
