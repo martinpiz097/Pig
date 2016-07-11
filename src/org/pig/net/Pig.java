@@ -25,9 +25,8 @@ import java.util.logging.Logger;
 public final class Pig {
 
     private final Properties saver; 
-    private final URL urlHost = new URL("http://icanhazip.com");
+    private final URL urlHost;
     private final File fileHost;
-    private String host;
     private BufferedReader reader;
     private FileOutputStream os;
     private FileInputStream is;
@@ -57,6 +56,7 @@ public final class Pig {
      */
     
     public Pig() throws IOException {
+        this.urlHost = new URL("http://icanhazip.com");
         saver = new Properties();
         fileHost = new File("host.txt");
         if(!fileHost.exists()) saveFile();
@@ -155,14 +155,35 @@ public final class Pig {
     }
     
     /**
+     * Retorna que retorna un boolean de si hay alguna ip en el archivo host.txt
+     * @return true si la ip es distinta a unknown, false en caso contrario
+     */
+    
+    public boolean hasHost(){
+        String ip = saver.getProperty("publicHost");
+        if(ip == null) return false;
+        return !ip.isEmpty() || !ip.equalsIgnoreCase("unknown");
+    }
+    
+    /**
      * Cambia el valor de la ip almacenado por el nuevo dato ingresado
      * por parámetro
      * @param host Nuevo valor de la ip a almacenar
-     * @throws IOException En caso de existir errores en la utilización del archivo
+     * @throws IOException En caso de existir errores en la utilización del archivo host.txt
      */
     
     public void setHost(String host) throws IOException{
         saver.setProperty("publicHost", host);
+        saveFile();
+    }
+    
+    /**
+     * Borra toda la información del archivo host.txt
+     * @throws IOException En caso de existir errores en la utilización del archivo host.txt
+     */
+    
+    public void clear() throws IOException{
+        saver.clear();
         saveFile();
     }
     
