@@ -25,8 +25,10 @@ import java.util.logging.Logger;
 public final class Pig {
 
     private final Properties saver; 
+    private final URL urlHost = new URL("http://icanhazip.com");
     private final File fileHost;
     private String host;
+    private BufferedReader reader;
     private FileOutputStream os;
     private FileInputStream is;
     private static Pig pig;
@@ -74,19 +76,21 @@ public final class Pig {
     
     /**
      * Rescata la ip pública de la red actual
-     * @throws IOException 
+     * @throws IOException En caso de existir errores en la utilización del archivo
+     * en donde se escribira la ip capturada
      */
     
-    private void loadPublicHost() throws IOException{
-        URL url = new URL("http://www.icanhazip.com");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-        reader.lines().forEach((host) -> {
-            try {
-                this.setHost(host);
-            } catch (IOException ex) {
-                Logger.getLogger(Pig.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
+    private void loadPublicHost() throws IOException {
+        try {
+            reader = new BufferedReader(new InputStreamReader(urlHost.openStream()));
+            this.setHost(reader.lines().findFirst().orElse("unknown"));
+            reader.close();
+        } catch (IOException ex) {
+            this.setHost("unknown");
+        }
+
+        // La ip del archivo sera la encontrada en la url, si no existe
+        // se escribirá "unknown"
     }
 
     /**
