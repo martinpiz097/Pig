@@ -1,3 +1,3 @@
 #file that content the current public ip
-#Mon Jul 11 04:44:17 CLT 2016
-publicHost=190.161.190.240
+#Wed Aug 03 14:33:27 CLT 2016
+publicHost=200.126.51.15

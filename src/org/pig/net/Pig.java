@@ -13,7 +13,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,7 +36,7 @@ public final class Pig {
     private static Pig pig;
     
     /**
-     * Método singleton de la clase Pig
+     * Método singleton de la clase Pig.
      * @return un objeto Pig estático instanciado a partir
      * del metodo
      */
@@ -50,7 +53,7 @@ public final class Pig {
     /**
      * Constructor de Pig: Public Ip's Generator
      * Obtenemos la ip pública de nuestra red y ésta se guardará en un archivo
-     * llamado host.txt
+     * llamado host.txt.
      * @throws IOException En caso de no existir el archivo utilizado o al
      * existir errores de conexión
      */
@@ -65,7 +68,7 @@ public final class Pig {
     }
 
     /**
-     * Captura nuevamente la ip pública de la red
+     * Rescata nuevamente la ip pública de la red y la almacena en el archivo.
      * @throws IOException En caso de existir errores de conexión o en la utilización del
      * archivo
      */
@@ -75,13 +78,27 @@ public final class Pig {
     }
     
     /**
-     * Rescata la ip pública de la red actual
+     * Rescata la ip pública de la red actual y la almacena en el archivo.
      * @throws IOException En caso de existir errores en la utilización del archivo
-     * en donde se escribira la ip capturada
+     * en donde se escribira la ip capturada, si es así la ip se almancenará como "unknown"
      */
     
     private void loadPublicHost() throws IOException {
         try {
+            /*
+            isReader = new InputStreamReader(urlHost.openStream()); 
+            String host = "";
+            char[] array = new char[1024];
+
+            int writen = 0;
+            while (isReader.read() != -1){ 
+                isReader.read(array);
+                writen++;
+            }
+            for (int i = 0; i < writen; i++) 
+                host.concat(String.valueOf(array[i]));
+            this.setHost(host);
+            */
             reader = new BufferedReader(new InputStreamReader(urlHost.openStream()));
             this.setHost(reader.lines().findFirst().orElse("unknown"));
             reader.close();
@@ -94,38 +111,35 @@ public final class Pig {
     }
 
     /**
-     * Retorna la ip pública convertida en un arreglo numérico
+     * Retorna la ip pública convertida en un arreglo numérico.
      * @return un arreglo short con los datos de la ip
      */
 
-    public Number[] getHostInBytes(){
+    public Short[] getHostInBytes(){
 
-        LinkedList<String> list = new LinkedList<>();
         char[] charArray = getHost().toCharArray();
-        int currentIndex = 0;
-        list.add("");
+        int cont = 0;
+        for (char c1 : charArray)
+            if (c1 != '.') 
+                cont++;
         
-        for (int i = 0; i < charArray.length; i++) {
-            if (charArray[i] != '.') 
-                list.set(currentIndex, list.get(currentIndex) + charArray[i]);
-            else{
-                currentIndex++;
-                list.add("");
-            }
-        }
-        Number[] arrayNumberIp = new Number[list.size()];
-        for (int i = 0; i < list.size(); i++) 
-            arrayNumberIp[i] = Short.parseShort(list.get(i));
-            
+        Short[] arrayNumberIp = new Short[cont];
+
+        cont = 0;
+        for (char c2 : charArray) 
+            if (c2 != '.') 
+                arrayNumberIp[cont] = Short.parseShort(c2 + "");
+        
+        
         return arrayNumberIp;
     }
     
     /**
-     * Retorna una lista con los valores de la ip pública separados por puntos
+     * Retorna una lista con los valores de la ip pública separados por puntos.
      * @return Lista de valores separados por puntos de la ip pública
      */
     
-    public LinkedList<Number> getHostInList(){
+    public LinkedList<Short> getHostInList(){
         LinkedList<String> listHost = new LinkedList<>();
         char[] charArray = getHost().toCharArray();
         int currentIndex = 0;
@@ -140,13 +154,13 @@ public final class Pig {
             }
         }
         
-        LinkedList<Number> listIpValues = new LinkedList<>();
+        LinkedList<Short> listIpValues = new LinkedList<>();
         listHost.stream().forEach((value) -> listIpValues.add(Short.parseShort(value)));
         return listIpValues;
     }
     
     /**
-     * Retorna la ip pública de la red
+     * Retorna la ip pública ya capturada de la red.
      * @return Ip pública de la red
      */
     
@@ -155,8 +169,9 @@ public final class Pig {
     }
     
     /**
-     * Retorna que retorna un boolean de si hay alguna ip en el archivo host.txt
-     * @return true si la ip es distinta a unknown, false en caso contrario
+     * Retorna un boolean en caso de existir alguna ip en el archivo host.txt.
+     * @return true si el archivo tiene una ip almacenada y si ésta es distinta a "unknown", 
+     * false en cualquier otro caso
      */
     
     public boolean hasHost(){
@@ -167,8 +182,8 @@ public final class Pig {
     
     /**
      * Cambia el valor de la ip almacenado por el nuevo dato ingresado
-     * por parámetro
-     * @param host Nuevo valor de la ip a almacenar
+     * por parámetro.
+     * @param host Nueva ip a almacenar
      * @throws IOException En caso de existir errores en la utilización del archivo host.txt
      */
     
@@ -190,7 +205,7 @@ public final class Pig {
     /**
      * Actualiza el archivo con los datos que han sido editados
      * y no guardados anteriormente.
-     * Nota: En el caso de los métodos reload(), loadPublicHost() y setHost()
+     * Nota: Para el caso de los métodos reload(), loadPublicHost() y setHost()
      * el archivo se actualiza automáticamente.
      * @throws FileNotFoundException En caso de no encontrar el archivo
      * @throws IOException En caso de existir errores en la utilización del archivo
@@ -203,7 +218,8 @@ public final class Pig {
     }
     
     /**
-     * Instancia el objeto fileHost como archivo con los datos de saver
+     * Configura el archivo host.txt para almacenar la ip, además instancia el objeto
+     * fileHost con los datos este archivo.
      * @throws FileNotFoundException En caso de no encontrar el archivo
      * @throws IOException En caso de errores al utilizar el archivo
      */
